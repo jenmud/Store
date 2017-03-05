@@ -19,15 +19,15 @@ var (
 
 // Hasher is a interface that wraps methods for generating a hash.
 type Hasher interface {
-	// Hash returns a unique hash of the struct.
-	Hash() (uint64, error)
+	// Hash returns a unique reproducible hash of the struct.
+	Hash() (string, error)
 }
 
 // NewBucket returns a new Bucket.
 func NewBucket() (*Bucket, error) {
 	bucket := Bucket{
 		count: 0,
-		items: make(map[interface{}]interface{}),
+		items: make(map[string]interface{}),
 	}
 	return &bucket, nil
 }
@@ -35,18 +35,17 @@ func NewBucket() (*Bucket, error) {
 // Bucket is a dumping ground for storing items.
 type Bucket struct {
 	count uint64
-	items map[interface{}]interface{}
+	items map[string]interface{}
 }
 
 // Has checks if the item it in the bucket.
-func (b *Bucket) Has(item Hasher) bool {
+func (b Bucket) Has(item Hasher) bool {
 	hash, _ := item.Hash()
 	v, ok := b.items[hash]
 	return ok == true && v == item
 }
 
-// Add adds an items to the bucket. Item should be a
-// pointer address to ensure uniqueness.
+// Add adds an items to the bucket.
 func (b *Bucket) Add(item Hasher) error {
 	if !b.Has(item) {
 		hash, err := item.Hash()
@@ -59,8 +58,7 @@ func (b *Bucket) Add(item Hasher) error {
 	return nil
 }
 
-// Remove removes an items from the bucket. Item should be a
-// pointer address.
+// Remove removes an items from the bucket.
 func (b *Bucket) Remove(item Hasher) error {
 	if b.count <= 0 {
 		return ErrZeroItems
@@ -81,7 +79,7 @@ func (b *Bucket) Remove(item Hasher) error {
 }
 
 // Len returns the unique item count in the bucket.
-func (b *Bucket) Len() uint64 {
+func (b Bucket) Len() uint64 {
 	return b.count
 }
 
@@ -100,7 +98,7 @@ type Store struct {
 }
 
 // Buckets returns all the registered buckets in the store.
-func (s *Store) Buckets() []*Bucket {
+func (s Store) Buckets() []*Bucket {
 	buckets := make([]*Bucket, len(s.buckets))
 	count := 0
 	for _, bucket := range s.buckets {
@@ -111,7 +109,7 @@ func (s *Store) Buckets() []*Bucket {
 }
 
 // BucketsWhichContain returns all the buckets containing items.
-func (s *Store) BucketsWhichContain(items ...Hasher) []*Bucket {
+func (s Store) BucketsWhichContain(items ...Hasher) []*Bucket {
 	contains := []*Bucket{}
 	buckets := s.Buckets()
 	for _, item := range items {
@@ -143,13 +141,13 @@ func (s *Store) Remove(bucketName string, item Hasher) error {
 }
 
 // HasBucket checks there is a bucket with ``name`` in the store.
-func (s *Store) HasBucket(name string) bool {
+func (s Store) HasBucket(name string) bool {
 	_, ok := s.buckets[name]
 	return ok
 }
 
 // GetBucket returns the bucket with ``name`` from the store.
-func (s *Store) GetBucket(name string) (*Bucket, error) {
+func (s Store) GetBucket(name string) (*Bucket, error) {
 	if !s.HasBucket(name) {
 		return nil, fmt.Errorf("No such bucket %q", name)
 	}

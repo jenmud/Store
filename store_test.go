@@ -16,7 +16,7 @@ func TestAddToBucket(t *testing.T) {
 	bucket, err := NewBucket()
 	assert.NoError(t, err)
 
-	something := &TestHashItem{name: "Foo"}
+	something := NewTestItem("Foo", "", 0)
 	err = bucket.Add(something)
 	assert.NoError(t, err)
 	assert.Equal(t, 1, int(bucket.Len()))
@@ -38,8 +38,8 @@ func TestRemoveFromBucket(t *testing.T) {
 	bucket, err := NewBucket()
 	assert.NoError(t, err)
 
-	missing := &TestHashItem{name: "Bar"}
-	something := &TestHashItem{name: "Foo"}
+	missing := NewTestItem("Bar", "", 0)
+	something := NewTestItem("Foo", "", 0)
 
 	err = bucket.Add(something)
 	assert.NoError(t, err)
@@ -63,8 +63,8 @@ func TestHasBucket(t *testing.T) {
 	bucket, err := NewBucket()
 	assert.NoError(t, err)
 
-	somethingElse := &TestHashItem{name: "Bar"}
-	something := &TestHashItem{name: "Foo"}
+	somethingElse := NewTestItem("Bar", "", 0)
+	something := NewTestItem("Foo", "", 0)
 
 	err = bucket.Add(something)
 	assert.NoError(t, err)
@@ -154,8 +154,8 @@ func TestStoreAddItem(t *testing.T) {
 	err = store.AddBucket("nodes", nodes)
 	assert.NoError(t, err)
 
-	foo := &TestHashItem{name: "Foo"}
-	bar := &TestHashItem{name: "Bar"}
+	foo := NewTestItem("Foo", "", 0)
+	bar := NewTestItem("Bar", "", 0)
 
 	err = store.Add("nodes", foo)
 	assert.NoError(t, err)
@@ -176,8 +176,8 @@ func TestStoreRemoveItem(t *testing.T) {
 	err = store.AddBucket("nodes", nodes)
 	assert.NoError(t, err)
 
-	foo := &TestHashItem{name: "Foo"}
-	bar := &TestHashItem{name: "Bar"}
+	foo := NewTestItem("Foo", "", 0)
+	bar := NewTestItem("Bar", "", 0)
 
 	err = store.Add("nodes", foo)
 	assert.NoError(t, err)
@@ -237,9 +237,9 @@ func TestStoreContains(t *testing.T) {
 	err = store.AddBucket("edges", edges)
 	assert.NoError(t, err)
 
-	foo := &TestHashItem{name: "Foo"}
-	bar := &TestHashItem{name: "Bar"}
-	cat := &TestHashItem{name: "Cat"}
+	foo := NewTestItem("Foo", "", 0)
+	bar := NewTestItem("Bar", "", 0)
+	cat := NewTestItem("Cat", "", 0)
 
 	err = store.Add("nodes", foo)
 	assert.NoError(t, err)

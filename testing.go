@@ -2,8 +2,8 @@ package store
 
 import (
 	"errors"
-
-	h "github.com/mitchellh/hashstructure"
+	"fmt"
+	"math/rand"
 )
 
 var (
@@ -14,15 +14,22 @@ var (
 
 // TestHashItem is a testing struct which implements the hasher interfaces
 // for testing.
-type TestHashItem struct {
+type TestItem struct {
 	name    string
 	surname string
 	age     uint
+	uid     int64
 }
 
 // Hash returns a unique hash number used for identification.
-func (i *TestHashItem) Hash() (uint64, error) {
-	return h.Hash(i, nil)
+func (i TestItem) Hash() (string, error) {
+	return fmt.Sprintf("%d", i.uid), nil
+}
+
+func NewTestItem(name, surname string, age uint) *TestItem {
+	return &TestItem{
+		uid: rand.Int63n(100),
+	}
 }
 
 // NewBucketSorter returns a container compatible with the sort.Interface.
